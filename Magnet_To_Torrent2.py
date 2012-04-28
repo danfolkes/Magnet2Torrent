@@ -1,3 +1,4 @@
+#!/usr/bin/python
 '''
 Created on Apr 19, 2012
 @author: dan
@@ -20,38 +21,69 @@ Created on Apr 19, 2012
     http://www.gnu.org/licenses/gpl-3.0.txt
 
 '''
- 
-if __name__ == '__main__':
-    import libtorrent as lt
-    import time
- 
-    TorrentFilePath = "/home/dan/torrentfiles/" + str(time.time()) + "/"
-    TorrentFilePath2 = "/home/dan/torrentfiles/" + str(time.time()) + "/" + str(time.time()) + ".torrent"
-    ses = lt.session()
-    #ses.listen_on(6881, 6891)
-    params = {
-        'save_path': TorrentFilePath,
-        'duplicate_is_error': True}
-    link = "magnet:?xt=urn:btih:599e3fb0433505f27d35efbe398225869a2a89a9&dn=ubuntu-10.04.4-server-i386.iso&tr=udp%3A%2F%2Ftracker.openbittorrent.com%3A80&tr=udp%3A%2F%2Ftracker.publicbt.com%3A80&tr=udp%3A%2F%2Ftracker.ccc.de%3A80"
-    handle = lt.add_magnet_uri(ses, link, params)
-    #ses.start_dht()
-    print 'saving torrent file here : ' + TorrentFilePath2 + " ..."
-    while (not handle.has_metadata()):
+
+import shutil, tempfile, os.path as pt, sys, libtorrent as lt, time, hashlib
+
+def showHelp():
+  print ""
+  print "USAGE: " + pt.basename( sys.argv[0] ) + " MAGNET [OUTPUT]"
+  print "  MAGNET\t- the magnet url"
+  print "  OUTPUT\t- the output torrent file name"
+  print ""
+
+if len(sys.argv) < 2:
+  showHelp();
+  sys.exit(0)
+
+magnet = sys.argv[1]
+digest = hashlib.md5(sys.argv[1]).hexdigest()
+output = pt.abspath(digest + ".torrent" )
+
+if len(sys.argv) == 3:
+  if pt.isdir(sys.argv[2]):
+    output = pt.abspath(pt.join(sys.argv[2],digest + ".torrent"))
+  elif pt.isdir(pt.dirname(pt.abspath(sys.argv[2]))) == True:
+    output = pt.abspath(sys.argv[2])
+  else:
+    showHelp();
+    print "Invalid output folder: " + pt.dirname(pt.abspath(sys.argv[2]))
+    print ""
+    sys.exit(0)
+
+tempdir = tempfile.mkdtemp()
+ses = lt.session()
+#ses.listen_on(6881, 6891)
+params = {
+    'save_path': tempdir,
+    'duplicate_is_error': True}
+handle = lt.add_magnet_uri(ses, magnet, params)
+#ses.start_dht()
+print 'saving torrent file here : ' + output + " ..."
+while (not handle.has_metadata()):
+    try:
         time.sleep(.1)
- 
-    torinfo = handle.get_torrent_info()
- 
-    fs = lt.file_storage()
-    for file in torinfo.files():
-        fs.add_file(file)
-    torfile = lt.create_torrent(fs)
-    torfile.set_comment(torinfo.comment())
-    torfile.set_creator(torinfo.creator())
- 
-    f = open(TorrentFilePath2 + "torrentfile.torrent", "wb")
-    f.write(lt.bencode(torfile.generate()))
-    f.close()
-    print 'saved and closing...'
+    except KeyboardInterrupt:
+        print "Abrorting..."
+        ses.pause()
+        print "Cleanup dir " + tempdir
+        shutil.rmtree(tempdir)
+        sys.exit(0)
+
+torinfo = handle.get_torrent_info()
+
+fs = lt.file_storage()
+for file in torinfo.files():
+    fs.add_file(file)
+torfile = lt.create_torrent(fs)
+torfile.set_comment(torinfo.comment())
+torfile.set_creator(torinfo.creator())
+    
+torcontent = lt.bencode(torfile.generate())
+f = open(output, "wb")
+f.write(lt.bencode(torfile.generate()))
+f.close()
+print 'Saved! Cleaning up dir: ' + tempdir
+shutil.rmtree(tempdir)
  
 #Uncomment to Download the Torrent:
 #    print 'starting torrent download...'
