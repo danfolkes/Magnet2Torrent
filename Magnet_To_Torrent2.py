@@ -1,7 +1,7 @@
 #!/usr/bin/python
 '''
 Created on Apr 19, 2012
-@author: dan
+@author: dan, Faless
 
     GNU GENERAL PUBLIC LICENSE - Version 3
                        
@@ -96,7 +96,7 @@ shutil.rmtree(tempdir)
 
 '''
 Created on Apr 19, 2012
-@author: dan
+@author: dan, Faless
 
     GNU GENERAL PUBLIC LICENSE - Version 3
                        
