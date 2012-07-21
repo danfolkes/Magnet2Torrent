@@ -26,7 +26,6 @@ import shutil, tempfile, os.path as pt, sys, libtorrent as lt, time, hashlib
 
 
 def magnet2torrent(magnet, output_name = None):
-  digest = hashlib.md5(magnet).hexdigest()
   if output_name and \
       not pt.isdir(output_name) and \
       not pt.isdir(pt.dirname(pt.abspath(output_name))):
