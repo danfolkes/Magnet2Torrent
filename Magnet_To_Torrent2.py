@@ -37,6 +37,10 @@ def magnet2torrent(magnet, output_name = None):
   ses = lt.session()
   params = {
     'save_path': tempdir,
+    'duplicate_is_error': True,
+    'storage_mode': lt.storage_mode_t(2),
+    'paused': False,
+    'auto_managed': True,
     'duplicate_is_error': True
   }
   handle = lt.add_magnet_uri(ses, magnet, params)
