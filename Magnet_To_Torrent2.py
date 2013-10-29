@@ -54,9 +54,11 @@ def magnet2torrent(magnet, output_name = None):
       print "Cleanup dir " + tempdir
       shutil.rmtree(tempdir)
       return
+  ses.pause();
   print "done"
 
   torinfo = handle.get_torrent_info()
+  torfile = lt.create_torrent(torinfo)
 
   output = pt.abspath(torinfo.name() + ".torrent" )
 
@@ -66,22 +68,15 @@ def magnet2torrent(magnet, output_name = None):
     elif pt.isdir(pt.dirname(pt.abspath(output_name))) == True:
       output = pt.abspath(output_name)
   print 'saving torrent file here : ' + output + " ..."
-
-  fs = lt.file_storage()
-  for file in torinfo.files():
-    fs.add_file(file)
-  torfile = lt.create_torrent(fs)
-  torfile.set_comment(torinfo.comment())
-  torfile.set_creator(torinfo.creator())
-
+  
   torcontent = lt.bencode(torfile.generate())
   f = open(output, "wb")
   f.write(lt.bencode(torfile.generate()))
   f.close()
   print 'Saved! Cleaning up dir: ' + tempdir
+  ses.remove_torrent(handle);
   shutil.rmtree(tempdir)
   return output
- 
 
 def showHelp():
   print ""
