@@ -64,7 +64,10 @@ def magnet2torrent(magnet, output_name=None):
     print("Done")
 
     torinfo = handle.get_torrent_info()
-    torfile = lt.create_torrent(torinfo)
+    fs = lt.file_storage()
+    for file in torinfo.files():
+        fs.add_file(file)
+    torfile = lt.create_torrent(fs)
 
     output = pt.abspath(torinfo.name() + ".torrent")
 
