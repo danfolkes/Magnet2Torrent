@@ -55,7 +55,7 @@ def magnet2torrent(magnet, output_name=None):
         try:
             sleep(1)
         except KeyboardInterrupt:
-            print("Abrorting...")
+            print("Aborting...")
             ses.pause()
             print("Cleanup dir " + tempdir)
             shutil.rmtree(tempdir)
