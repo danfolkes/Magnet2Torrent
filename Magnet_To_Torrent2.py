@@ -28,6 +28,7 @@ import os.path as pt
 import sys
 import libtorrent as lt
 from time import sleep
+from argparse import ArgumentParser
 
 
 def magnet2torrent(magnet, output_name=None):
@@ -86,25 +87,14 @@ def magnet2torrent(magnet, output_name=None):
 
     return output
 
-
-def showHelp():
-    print("")
-    print("USAGE: " + pt.basename(sys.argv[0]) + " MAGNET [OUTPUT]")
-    print("  MAGNET\t- the magnet url")
-    print("  OUTPUT\t- the output torrent file name")
-    print("")
-
-
 def main():
-    if len(sys.argv) < 2:
-        showHelp()
-        sys.exit(0)
+    parser = ArgumentParser(description="A command line tool that converts magnet links in to .torrent files")
+    parser.add_argument('-m','--magnet', help='The magnet url', required=True)
+    parser.add_argument('-o','--output', help='The output torrent file name', required=True)
 
-    magnet = sys.argv[1]
-    output_name = None
-
-    if len(sys.argv) >= 3:
-        output_name = sys.argv[2]
+    args = vars(parser.parse_args())
+    magnet = args['magnet']
+    output_name = args['output']
 
     magnet2torrent(magnet, output_name)
 
