@@ -2,6 +2,8 @@
 
 A command line tool that converts magnet links in to .torrent files.
 
+### This project is mostly abandoned. I will still merge most pull requests.
+
 ## Requirements
 * python
 * python-libtorrent (libtorrent-rasterbar version 0.16 or later)
