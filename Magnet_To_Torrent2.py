@@ -28,6 +28,7 @@ import os.path as pt
 import sys
 import libtorrent as lt
 from time import sleep
+from argparse import ArgumentParser
 
 
 def magnet2torrent(magnet, output_name=None):
@@ -85,25 +86,58 @@ def magnet2torrent(magnet, output_name=None):
 
     return output
 
-
-def showHelp():
-    print("")
-    print("USAGE: " + pt.basename(sys.argv[0]) + " MAGNET [OUTPUT]")
-    print("  MAGNET\t- the magnet url")
-    print("  OUTPUT\t- the output torrent file name")
-    print("")
-
-
 def main():
-    if len(sys.argv) < 2:
-        showHelp()
-        sys.exit(0)
+    parser = ArgumentParser(description="A command line tool that converts magnet links in to .torrent files")
+    parser.add_argument('-m','--magnet', help='The magnet url')
+    parser.add_argument('-o','--output', help='The output torrent file name')
 
-    magnet = sys.argv[1]
+    #
+    # This second parser is created to force the user to provide
+    # the 'output' arg if they provide the 'magnet' arg.
+    #
+    # The current version of argparse does not have support
+    # for conditionally required arguments. That is the reason
+    # for creating the second parser
+    #
+    # Side note: one should look into forking argparse and adding this
+    # feature.
+    #
+    conditionally_required_arg_parser = ArgumentParser(description="A command line tool that converts magnet links in to .torrent files")
+    conditionally_required_arg_parser.add_argument('-m','--magnet', help='The magnet url')
+    conditionally_required_arg_parser.add_argument('-o','--output', help='The output torrent file name', required=True)
+
+    magnet = None
     output_name = None
 
-    if len(sys.argv) >= 3:
-        output_name = sys.argv[2]
+    #
+    # Attempting to retrieve args using the new method
+    #
+    args = vars(parser.parse_known_args()[0])
+    if args['magnet'] is not None:
+        magnet = args['magnet']
+        argsHack = vars(conditionally_required_arg_parser.parse_known_args()[0])
+        output_name = argsHack['output']
+    if args['output'] is not None and output_name is None:
+        output_name = args['output']
+        if magnet is None:
+            #
+            # This is a special case.
+            # This is when the user provides only the "output" args.
+            # We're forcing him to provide the 'magnet' args in the new method
+            #
+            print ('usage: {0} [-h] [-m MAGNET] -o OUTPUT'.format(sys.argv[0]))
+            print ('{0}: error: argument -m/--magnet is required'.format(sys.argv[0]))
+            sys.exit()
+    #
+    # Defaulting to the old of doing things
+    # 
+    if output_name is None and magnet is None:
+        if len(sys.argv) >= 2:
+            magnet = sys.argv[1]
+        if len(sys.argv) >= 3:
+            output_name = sys.argv[2]
+
+    print magnet, output_name
 
     magnet2torrent(magnet, output_name)
 
