@@ -22,7 +22,6 @@ Created on Apr 19, 2012
 
 '''
 
-from __future__ import print_function
 import shutil
 import tempfile
 import os.path as pt
@@ -137,8 +136,6 @@ def main():
             magnet = sys.argv[1]
         if len(sys.argv) >= 3:
             output_name = sys.argv[2]
-
-    print(magnet, output_name)
 
     magnet2torrent(magnet, output_name)
 
