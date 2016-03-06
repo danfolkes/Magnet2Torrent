@@ -137,8 +137,6 @@ def main():
         if len(sys.argv) >= 3:
             output_name = sys.argv[2]
 
-    print magnet, output_name
-
     magnet2torrent(magnet, output_name)
 
 
