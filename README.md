@@ -8,7 +8,7 @@ A command line tool that converts magnet links in to .torrent files.
 * python
 * python-libtorrent (libtorrent-rasterbar version 0.16 or later)
 
-## Ubuntu
+## Install python-libtorrent on Ubuntu
 `sudo apt-get install python-libtorrent -y`
 
 ## How to Use
