@@ -11,6 +11,9 @@ A command line tool that converts magnet links in to .torrent files.
 ## Install python-libtorrent on Ubuntu
 `sudo apt-get install python-libtorrent -y`
 
+## Install python-libtorrent on macOS
+`brew install libtorrent-rasterbar --with-python`
+
 ## How to Use
 `python Magnet_To_Torrent2.py <magnet link> [torrent file]`
 
